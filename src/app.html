@@ -8,53 +8,32 @@
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
-		<div style="display: flex; align-items: center; justify-content: center;">%sveltekit.body%</div>
+		<div class="container">%sveltekit.body%</div>
 	</body>
 </html>
 
 <style>
 	:root {
     --background: #fff;
-    --foreground: #2d2d2d;
-    --hint: #666;
-    --box-bg: #f0f0f0;
-    --box-border: #e0e0e0;
-    --box-correct: #4caf50;
-    --box-correct-border: #388e3c;
-    --box-present: #ffeb3b;
-    --box-present-border: #fbc02d;
-    --box-absent: #e0e0e0;
-    --box-absent-border: #bdbdbd;
-    --input-bg: #f9f9f9;
-    --input-border: #bbb;
-    --btn-bg: #1976d2;
-    --btn-bg-disabled: #90caf9;
-    --btn-bg-restart: #43a047;
-    --message: #d32f2f;
 }
 @media (prefers-color-scheme: dark) {
     :root {
         --background: #181a1b;
-        --foreground: #f5f5f5;
-        --hint: #bdbdbd;
-        --box-bg: #23272a;
-        --box-border: #444;
-        --box-correct: #388e3c;
-        --box-correct-border: #4caf50;
-        --box-present: #bfae2c;
-        --box-present-border: #ffeb3b;
-        --box-absent: #333;
-        --box-absent-border: #666;
-        --input-bg: #23272a;
-        --input-border: #666;
-        --btn-bg: #1565c0;
-        --btn-bg-disabled: #37474f;
-        --btn-bg-restart: #388e3c;
-        --message: #ef5350;
     }
 }
 
 body {
 	background: var(--background);
+    overflow-y: hidden;
+}
+
+@media (max-width: 600px) {
+    .container {
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        flex-direction: column;
+        height: 95vh;
+    }
 }
 </style>

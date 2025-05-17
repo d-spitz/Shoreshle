@@ -1,14 +1,11 @@
 <script lang="ts">
 import { roots } from '$lib/roots';
 import type { Root } from '$lib/models/root';
-import { onMount } from 'svelte';
-import InputBlocks from '$lib/InputBlocks.svelte';
 import Keyboard from '$lib/Keyboard.svelte';
+import InputBlocks from '$lib/InputBlocks.svelte';
 
 function getDailyRoot(): Root {
-    // Use today's date in ISO format as a seed
     const today = new Date().toISOString().slice(0, 10);
-    // Simple hash function for string to int
     let hash = 0;
     for (let i = 0; i < today.length; i++) {
         hash = today.charCodeAt(i) + ((hash << 5) - hash);
@@ -21,20 +18,18 @@ const maxGuesses = 6;
 let currentRoot: Root = getDailyRoot();
 let guesses: string[] = [];
 let rootLength = currentRoot.root.length;
-let inputBoxes: string[] = Array(rootLength).fill('');
+let currentGuess = '';
 let gameState: 'playing' | 'won' | 'lost' = 'playing';
 let message = '';
 
 let letterStatuses: Record<string, 'correct' | 'present' | 'absent' | undefined> = {};
 
-// Hebrew keyboard rows for on-screen keyboard
 const hebrewKeyboardRows: string[][] = [
     Array.from('קראטוןםפ'),
     Array.from('שדגכעיחלךף'),
     Array.from('זסבהנמצתץ')
 ];
 
-// Map final forms to regular forms
 const finalToRegular: Record<string, string> = {
     ך: 'כ', ם: 'מ', ן: 'נ', ף: 'פ', ץ: 'צ'
 };
@@ -51,7 +46,6 @@ function updateLetterStatuses(guess: string) {
     for (let i = 0; i < normGuess.length; i++) {
         const letter = normGuess[i];
         const status = getLetterStatus(normGuess, i, normAnswer);
-        // Only upgrade status (absent < present < correct)
         if (status === 'correct' ||
             (status === 'present' && letterStatuses[letter] !== 'correct') ||
             (status === 'absent' && !letterStatuses[letter])) {
@@ -61,8 +55,7 @@ function updateLetterStatuses(guess: string) {
 }
 
 function checkGuess() {
-    // Join inputBoxes right-to-left for Hebrew (rightmost is first letter)
-    const input = inputBoxes.slice().reverse().join('');
+    const input = currentGuess;
     const normInput = normalizeWord(input);
     const normAnswer = normalizeWord(currentRoot.root);
     if (normInput.length < 3 || normInput.length > 4) {
@@ -84,120 +77,77 @@ function checkGuess() {
     } else {
         message = '';
     }
-    inputBoxes = Array(rootLength).fill('');
-    setTimeout(() => {
-        const first = document.getElementById(`box-${rootLength - 1}`) as HTMLInputElement;
-        first?.focus();
-    }, 0);
+    currentGuess = '';
 }
 
 function getLetterStatus(guess: string, index: number, answerOverride?: string) {
-    // guess and answer are both normalized and left-to-right
     const answer = answerOverride || normalizeWord(currentRoot.root);
-    // For RTL, guess is reversed, so index 0 is rightmost
     if (guess[index] === answer[index]) return 'correct';
     if (answer.includes(guess[index])) return 'present';
     return 'absent';
 }
 
-function handleBoxInput(e: Event, idx: number) {
-    const target = e.target as HTMLInputElement;
-    let val = target.value.replace(/[^א-ת]/g, '');
-    if (val.length > 1) val = val.slice(-1); // Only last char
-    inputBoxes[idx] = val;
-    // Move to next box (lower index, to the left visually) if filled, since Hebrew is RTL
-    if (val && idx > 0) {
-        const next = document.getElementById(`box-${idx - 1}`) as HTMLInputElement;
-        next?.focus();
-    }
-}
-
-function handleBoxKeydown(e: KeyboardEvent, idx: number) {
-    // For RTL: backspace moves right (higher index)
-    if (e.key === 'Backspace' && !inputBoxes[idx] && idx < inputBoxes.length - 1) {
-        const prev = document.getElementById(`box-${idx + 1}`) as HTMLInputElement;
-        prev?.focus();
-    }
-}
-
 function handleKeyboardClick(letter: string) {
-    // Fill from right to left (highest empty index)
-    const idx = inputBoxes.lastIndexOf('');
-    if (idx !== -1) {
-        inputBoxes[idx] = letter;
-        // Focus next box (lower index, to the left visually)
-        setTimeout(() => {
-            if (idx > 0) {
-                const next = document.getElementById(`box-${idx - 1}`) as HTMLInputElement;
-                next?.focus();
-            }
-        }, 0);
+    if (gameState !== 'playing') return;
+    if (currentGuess.length < rootLength) {
+        currentGuess += letter;
     }
 }
 
 function handleKeyboardBackspace() {
-    // Simulate a Backspace keydown on the currently focused input
-    const active = document.activeElement as HTMLInputElement;
-    if (active && active.classList.contains('guess-char-box')) {
-        const event = new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true });
-        active.dispatchEvent(event);
+    if (gameState !== 'playing') return;
+    if (currentGuess.length > 0) {
+        currentGuess = currentGuess.slice(0, -1);
     }
 }
 
 function restart() {
     currentRoot = getDailyRoot();
     guesses = [];
-    inputBoxes = Array(rootLength).fill('');
+    currentGuess = '';
     letterStatuses = {};
     gameState = 'playing';
     message = '';
-    setTimeout(() => {
-        const first = document.getElementById(`box-${rootLength - 1}`) as HTMLInputElement;
-        first?.focus();
-    }, 0);
 }
-
-let inputBlocksRef: any;
-
-onMount(() => {
-    setTimeout(() => {
-        const first = document.getElementById(`box-${rootLength - 1}`) as HTMLInputElement;
-        first?.focus();
-    }, 0);
-});
 </script>
 
 <main class="container">
-    <h1>שורשל</h1>
-    <div class="hint">רמז: {currentRoot.meaning}</div>
+    <div class="header">
+        <h1>שורשל</h1>
+        <div class="hint">רמז: {currentRoot.meaning}</div>
+    </div>
     <div class="guesses">
-        {#each guesses as guess}
-            <div class="guess-row">
-                {#each Array(guess.length) as _, i}
-                    <span class="letter {getLetterStatus(normalizeWord(guess), guess.length - 1 - i)}">{guess[guess.length - 1 - i]}</span>
-                {/each}
-            </div>
+        {#each Array(maxGuesses) as _, rowIdx}
+            {#if rowIdx < guesses.length}
+                <!-- Filled guess row -->
+                <div class="guess-row">
+                    {#each Array(rootLength) as _, i}
+                        <span class="letter {getLetterStatus(normalizeWord(guesses[rowIdx]), rootLength - 1 - i)}">
+                            {guesses[rowIdx][rootLength - 1 - i] || ''}
+                        </span>
+                    {/each}
+                </div>
+            {:else if rowIdx === guesses.length && gameState === 'playing'}
+                <!-- Current guess row -->
+                <InputBlocks guess={currentGuess} rootLength={rootLength} />
+            {:else}
+                <!-- Blank row -->
+                <div class="guess-row">
+                    {#each Array(rootLength) as _, i}
+                        <span class="letter"></span>
+                    {/each}
+                </div>
+            {/if}
         {/each}
-        {#if gameState === 'playing' && guesses.length < maxGuesses}
-            <form on:submit|preventDefault={checkGuess} class="guess-form">
-                <InputBlocks
-                    bind:this={inputBlocksRef}
-                    {inputBoxes}
-                    onInput={handleBoxInput}
-                    onKeydown={handleBoxKeydown}
-                    disabled={gameState !== 'playing'}
-                />
-            </form>
-        {/if}
     </div>
     <Keyboard
         rows={hebrewKeyboardRows}
         {letterStatuses}
         onKey={handleKeyboardClick}
-        onBackspace={() => inputBlocksRef?.handleBackspace()}
+        onBackspace={handleKeyboardBackspace}
         onEnter={checkGuess}
         disabled={gameState !== 'playing'}
-        currentInputLength={inputBoxes.join('').length}
+        currentInputLength={currentGuess.length}
         requiredLength={rootLength}
     />
     <div class="message">{message}</div>
@@ -249,6 +199,7 @@ onMount(() => {
         --message: #ef5350;
     }
 }
+
 .container {
     max-width: 400px;
     margin: 2rem auto;
@@ -260,6 +211,18 @@ onMount(() => {
     font-family: 'Assistant', Arial, sans-serif;
     color: var(--foreground);
 }
+
+@media (max-width: 600px) {
+    .container {
+        padding-top: 4.2rem;
+        padding: 0.2rem;
+        margin: 0;
+        width: 100%;
+        min-height: 90vh;
+        box-sizing: border-box;
+    }
+}
+
 h1 {
     font-size: 2.2rem;
     margin-bottom: 0.5rem;
@@ -272,20 +235,21 @@ h1 {
     margin-bottom: 1.5rem;
 }
 .guesses {
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 .guess-row {
     display: flex;
     justify-content: center;
-    margin-bottom: 0.5rem;
+    gap: 2px;
 }
 .letter {
     display: inline-block;
-    width: 2.2rem;
-    height: 2.2rem;
-    line-height: 2.2rem;
-    margin: 0 0.15rem;
-    font-size: 1.5rem;
+    width: 4rem;
+    height: 4rem;
+    line-height: 4rem;
+    font-size: 2.5rem;
     border-radius: 0.4rem;
     background: var(--box-bg);
     color: var(--foreground);
@@ -293,6 +257,9 @@ h1 {
     font-weight: bold;
     text-align: center;
     transition: background 0.2s, border 0.2s;
+}
+.letter.filled {
+    border-color: var(--btn-bg);
 }
 .letter.correct {
     background: var(--box-correct);
@@ -315,29 +282,7 @@ h1 {
     align-items: center;
     gap: 0.5rem;
 }
-.input-boxes {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-    margin-bottom: 1rem;
-}
-.guess-char-box {
-    width: 2.2rem;
-    height: 2.2rem;
-    font-size: 1.5rem;
-    text-align: center;
-    border-radius: 0.4rem;
-    border: 2px solid var(--input-border);
-    background: var(--input-bg);
-    direction: rtl;
-    font-family: inherit;
-    transition: border 0.2s;
-    color: var(--foreground);
-}
-.guess-char-box:focus {
-    border-color: var(--btn-bg);
-    outline: none;
-}
+
 .submit-btn, .restart-btn {
     font-size: 1.1rem;
     border-radius: 0.4rem;
@@ -364,66 +309,24 @@ h1 {
     margin-top: 1rem;
     padding: 0.5rem 1.2rem;
 }
-.alephbet-keyboard {
-    margin: 1.2rem 0 0.5rem 0;
-    user-select: none;
+.header {
+    position: static;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--container-bg);
+    z-index: 200;
 }
-.alephbet-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.2rem;
-    margin-bottom: 0.2rem;
-}
-.alephbet-key {
-    width: 2.2rem;
-    height: 2.2rem;
-    font-size: 1.3rem;
-    border-radius: 0.4rem;
-    background: var(--box-bg);
-    color: var(--foreground);
-    border: 2px solid var(--box-border);
-    text-align: center;
-    font-weight: bold;
-    transition: background 0.2s, border 0.2s;
-    margin: 0 0.05rem;
-    cursor: pointer;
-    outline: none;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-.alephbet-key:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-.alephbet-key.correct {
-    background: var(--box-correct);
-    color: #fff;
-    border-color: var(--box-correct-border);
-}
-.alephbet-key.present {
-    background: var(--box-present);
-    color: #222;
-    border-color: var(--box-present-border);
-}
-.alephbet-key.absent {
-    background: var(--box-absent);
-    color: #aaa;
-    border-color: var(--box-absent-border);
-}
-.alephbet-key.special-key {
-    width: 2.2rem;
-    font-size: 1.2rem;
-    background: var(--btn-bg-disabled);
-    color: var(--foreground);
-}
-.alephbet-key.enter-key {
-    background: var(--btn-bg);
-    color: #fff;
-    border-color: var(--btn-bg);
-    font-size: 1.2rem;
-    width: calc(2.2rem * 1.5);
+@media (max-width: 600px) {
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        background: var(--background);
+        z-index: 200;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 0.7rem 0 0.7rem 0;
+    }
 }
 </style>

@@ -23,17 +23,16 @@ export let requiredLength: number = 0;
                     disabled={disabled}
                 >{letter}</button>
             {/each}
-            {#if rowIdx === 2}
-                <button
-                    type="button"
-                    class="alephbet-key enter-key"
-                    style="width:calc(2.2rem * 1.5);height:2.2rem;"
-                    on:click={onEnter}
-                    disabled={disabled || currentInputLength !== requiredLength}
-                >⏎</button>
-            {/if}
         </div>
     {/each}
+    <div class="alephbet-row enter-row">
+        <button
+            type="button"
+            class="alephbet-key enter-key"
+            on:click={onEnter}
+            disabled={disabled || currentInputLength !== requiredLength}
+        >⏎</button>
+    </div>
 </div>
 
 <style>
@@ -105,27 +104,37 @@ export let requiredLength: number = 0;
     font-size: 1.2rem;
     width: calc(2.2rem * 1.5);
 }
+.alephbet-row.enter-row {
+    justify-content: center;
+    margin-top: 0.4rem;
+    margin-bottom: 0;
+    gap: 0;
+}
 
 @media (max-width: 600px) {
     .alephbet-keyboard {
-        padding: 0 0.1rem;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+        background: var(--background);
+        margin: 0;
+        padding: 2px;
+        padding-top: 6px;
+        box-shadow: 0 -2px 16px rgba(0,0,0,0.08);
+        min-height: 6.5rem;
     }
     .alephbet-row {
-        gap: 0.05rem;
+        gap: 0rem;
     }
     .alephbet-key {
-        width: 1.5rem;
-        height: 1.5rem;
-        font-size: 0.9rem;
-        margin: 0 0.01rem;
+        width: 1.75rem;
+        height: 2.4rem;
+        font-size: 1.4rem;
     }
-    .alephbet-key.enter-key {
-        width: calc(1.5rem * 1.5);
-        font-size: 0.85rem;
-    }
-    .alephbet-key.special-key {
-        width: 1.5rem;
-        font-size: 0.85rem;
+    .alephbet-row.enter-row {
+        margin-top: 0.3rem;
     }
 }
 </style>
