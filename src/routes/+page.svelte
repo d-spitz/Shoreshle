@@ -252,7 +252,7 @@ onMount(() => {
 .container {
     max-width: 400px;
     margin: 2rem auto;
-    padding: 2rem;
+    padding: 1rem;
     background: var(--container-bg);
     border-radius: 1rem;
     box-shadow: 0 2px 16px rgba(0,0,0,0.08);

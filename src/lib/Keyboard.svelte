@@ -40,6 +40,10 @@ export let requiredLength: number = 0;
 .alephbet-keyboard {
     margin: 1.2rem 0 0.5rem 0;
     user-select: none;
+    max-width: 100vw;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
 }
 .alephbet-row {
     display: flex;
@@ -47,6 +51,8 @@ export let requiredLength: number = 0;
     justify-content: center;
     gap: 0.2rem;
     margin-bottom: 0.2rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 .alephbet-key {
     width: 2.2rem;
@@ -98,5 +104,28 @@ export let requiredLength: number = 0;
     border-color: var(--btn-bg);
     font-size: 1.2rem;
     width: calc(2.2rem * 1.5);
+}
+
+@media (max-width: 600px) {
+    .alephbet-keyboard {
+        padding: 0 0.1rem;
+    }
+    .alephbet-row {
+        gap: 0.05rem;
+    }
+    .alephbet-key {
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.9rem;
+        margin: 0 0.01rem;
+    }
+    .alephbet-key.enter-key {
+        width: calc(1.5rem * 1.5);
+        font-size: 0.85rem;
+    }
+    .alephbet-key.special-key {
+        width: 1.5rem;
+        font-size: 0.85rem;
+    }
 }
 </style>
