@@ -113,17 +113,10 @@ export let requiredLength: number = 0;
 
 @media (max-width: 600px) {
     .alephbet-keyboard {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 100;
-        background: var(--background);
-        margin: 0;
+        margin: 0.5rem 0 0 0;
         padding: 2px;
         padding-top: 6px;
         box-shadow: 0 -2px 16px rgba(0,0,0,0.08);
-        min-height: 6.5rem;
     }
     .alephbet-row {
         gap: 0rem;

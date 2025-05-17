@@ -19,9 +19,9 @@ export let rootLength: number = 3;
 }
 .letter {
     display: inline-block;
-    width: 4rem;
-    height: 4rem;
-    line-height: 4rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    line-height: 3.5rem;
     font-size: 2.5rem;
     border-radius: 0.4rem;
     background: var(--box-bg);

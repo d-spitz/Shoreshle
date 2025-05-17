@@ -210,15 +210,17 @@ function restart() {
     text-align: center;
     font-family: 'Assistant', Arial, sans-serif;
     color: var(--foreground);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 @media (max-width: 600px) {
     .container {
-        padding-top: 4.2rem;
         padding: 0.2rem;
         margin: 0;
-        width: 100%;
-        min-height: 90vh;
+        width: 100vw;
+        min-height: 100vh;
         box-sizing: border-box;
     }
 }
@@ -238,6 +240,8 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1 1 auto;
+    justify-content: center;
 }
 .guess-row {
     display: flex;
@@ -246,9 +250,9 @@ h1 {
 }
 .letter {
     display: inline-block;
-    width: 4rem;
-    height: 4rem;
-    line-height: 4rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    line-height: 3.5rem;
     font-size: 2.5rem;
     border-radius: 0.4rem;
     background: var(--box-bg);
@@ -310,23 +314,7 @@ h1 {
     padding: 0.5rem 1.2rem;
 }
 .header {
-    position: static;
-    top: 0;
-    left: 0;
+    flex: 0 0 auto;
     width: 100%;
-    background: var(--container-bg);
-    z-index: 200;
-}
-@media (max-width: 600px) {
-    .header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        background: var(--background);
-        z-index: 200;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        padding: 0.7rem 0 0.7rem 0;
-    }
 }
 </style>
