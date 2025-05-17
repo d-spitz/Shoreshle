@@ -2,6 +2,8 @@
 import { roots } from '$lib/roots';
 import type { Root } from '$lib/models/root';
 import { onMount } from 'svelte';
+import InputBlocks from '$lib/InputBlocks.svelte';
+import Keyboard from '$lib/Keyboard.svelte';
 
 function getDailyRoot(): Root {
     // Use today's date in ISO format as a seed
@@ -18,7 +20,8 @@ function getDailyRoot(): Root {
 const maxGuesses = 6;
 let currentRoot: Root = getDailyRoot();
 let guesses: string[] = [];
-let inputBoxes: string[] = Array(currentRoot.root.length).fill('');
+let rootLength = currentRoot.root.length;
+let inputBoxes: string[] = Array(rootLength).fill('');
 let gameState: 'playing' | 'won' | 'lost' = 'playing';
 let message = '';
 
@@ -81,9 +84,9 @@ function checkGuess() {
     } else {
         message = '';
     }
-    inputBoxes = Array(currentRoot.root.length).fill('');
+    inputBoxes = Array(rootLength).fill('');
     setTimeout(() => {
-        const first = document.getElementById('box-0') as HTMLInputElement;
+        const first = document.getElementById(`box-${rootLength - 1}`) as HTMLInputElement;
         first?.focus();
     }, 0);
 }
@@ -133,34 +136,32 @@ function handleKeyboardClick(letter: string) {
 }
 
 function handleKeyboardBackspace() {
-    // Remove from rightmost filled box (highest index that is filled)
-    let idx = inputBoxes.length - 1;
-    while (idx >= 0 && !inputBoxes[idx]) idx--;
-    if (idx >= 0) {
-        inputBoxes[idx] = '';
-        setTimeout(() => {
-            const focusBox = document.getElementById(`box-${idx}`) as HTMLInputElement;
-            focusBox?.focus();
-        }, 0);
+    // Simulate a Backspace keydown on the currently focused input
+    const active = document.activeElement as HTMLInputElement;
+    if (active && active.classList.contains('guess-char-box')) {
+        const event = new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true });
+        active.dispatchEvent(event);
     }
 }
 
 function restart() {
     currentRoot = getDailyRoot();
     guesses = [];
-    inputBoxes = Array(currentRoot.root.length).fill('');
+    inputBoxes = Array(rootLength).fill('');
     letterStatuses = {};
     gameState = 'playing';
     message = '';
     setTimeout(() => {
-        const first = document.getElementById('box-0') as HTMLInputElement;
+        const first = document.getElementById(`box-${rootLength - 1}`) as HTMLInputElement;
         first?.focus();
     }, 0);
 }
 
+let inputBlocksRef: any;
+
 onMount(() => {
     setTimeout(() => {
-        const first = document.getElementById('box-0') as HTMLInputElement;
+        const first = document.getElementById(`box-${rootLength - 1}`) as HTMLInputElement;
         first?.focus();
     }, 0);
 });
@@ -179,49 +180,26 @@ onMount(() => {
         {/each}
         {#if gameState === 'playing' && guesses.length < maxGuesses}
             <form on:submit|preventDefault={checkGuess} class="guess-form">
-                <div class="input-boxes">
-                    {#each inputBoxes as val, i (i)}
-                        <input
-                            id={`box-${i}`}
-                            class="guess-char-box"
-                            type="text"
-                            bind:value={inputBoxes[i]}
-                            maxlength="1"
-                            pattern="[א-ת]"
-                            inputmode="text"
-                            autocomplete="off"
-                            dir="rtl"
-                            required
-                            disabled={gameState !== 'playing'}
-                            on:input={(e) => handleBoxInput(e, i)}
-                            on:keydown={(e) => handleBoxKeydown(e, i)}
-                        />
-                    {/each}
-                </div>
+                <InputBlocks
+                    bind:this={inputBlocksRef}
+                    {inputBoxes}
+                    onInput={handleBoxInput}
+                    onKeydown={handleBoxKeydown}
+                    disabled={gameState !== 'playing'}
+                />
             </form>
         {/if}
     </div>
-    <div class="alephbet-keyboard">
-        {#each hebrewKeyboardRows as row, rowIdx}
-            <div class="alephbet-row">
-                {#if rowIdx === 2}
-                    <button type="button" class="alephbet-key special-key" on:click={handleKeyboardBackspace} disabled={gameState !== 'playing'}>⌫</button>
-                {/if}
-                {#each row as letter}
-                    <button type="button" class="alephbet-key {letterStatuses[letter]}" on:click={() => handleKeyboardClick(letter)} disabled={gameState !== 'playing'}>{letter}</button>
-                {/each}
-                {#if rowIdx === 2}
-                    <button
-                        type="button"
-                        class="alephbet-key enter-key"
-                        style="width:calc(2.2rem * 1.5);height:2.2rem;"
-                        on:click={checkGuess}
-                        disabled={gameState !== 'playing' || inputBoxes.join('').length !== currentRoot.root.length}
-                    >⏎</button>
-                {/if}
-            </div>
-        {/each}
-    </div>
+    <Keyboard
+        rows={hebrewKeyboardRows}
+        {letterStatuses}
+        onKey={handleKeyboardClick}
+        onBackspace={() => inputBlocksRef?.handleBackspace()}
+        onEnter={checkGuess}
+        disabled={gameState !== 'playing'}
+        currentInputLength={inputBoxes.join('').length}
+        requiredLength={rootLength}
+    />
     <div class="message">{message}</div>
     {#if gameState !== 'playing'}
         <button class="restart-btn" on:click={restart}>שחק שוב</button>
