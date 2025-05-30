@@ -48,7 +48,7 @@ export let requiredLength: number = 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.2rem;
+    gap: 1px;
     margin-bottom: 0.2rem;
     width: 100%;
     box-sizing: border-box;
@@ -117,8 +117,8 @@ export let requiredLength: number = 0;
         overflow: visible;
     }
     .alephbet-key {
-        width: 2rem;
-        height: 2.8rem;
+        width: clamp(1.5rem, 8vw, 2rem);
+        height: 2.5rem;
         font-size: 1.4rem;
     }
     .alephbet-row.enter-row {

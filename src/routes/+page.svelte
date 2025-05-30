@@ -240,10 +240,8 @@
 
 	@media (max-width: 600px) {
 		.container {
-			padding: 0.2rem;
+			padding: 1rem 0.2rem;
 			margin: 0;
-			width: 100vw;
-			height: 80vh;
 			box-sizing: border-box;
 		}
 	}
