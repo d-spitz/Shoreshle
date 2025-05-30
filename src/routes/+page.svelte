@@ -19,13 +19,13 @@
 	};
 
 	const maxGuesses = 6;
-	let currentRoot: Root = getDailyRoot();
+	let currentRoot: Root = roots[0] ?? getDailyRoot();
 	let guesses: string[] = [];
 	let rootLength = currentRoot.root.length;
 	let currentGuess = '';
 	let gameState: 'playing' | 'won' | 'lost' = 'playing';
 	let message = '';
-	let normalizedRoots = roots.map(r => normalizeWord(r.root));
+	let normalizedRoots = roots.map((r) => normalizeWord(r.root));
 
 	let letterStatuses: Record<string, 'correct' | 'present' | 'absent' | undefined> = {};
 
@@ -40,7 +40,7 @@
 		const idx = Math.abs(hash) % roots.length;
 		return roots[idx];
 	}
-	
+
 	function normalizeLetter(l: string) {
 		return finalToRegular[l] || l;
 	}
@@ -94,11 +94,38 @@
 		currentGuess = '';
 	}
 
+	function getGuessStatuses(guess: string): Array<'correct' | 'present' | 'absent'> {
+		const normGuess = normalizeWord(guess);
+		const normAnswer = normalizeWord(currentRoot.root);
+
+		// First pass: mark correct letters and count remaining letters in answer
+		const statuses = Array(normGuess.length).fill('absent');
+		const remainingLetters = [...normAnswer];
+
+		// First mark all correct letters
+		for (let i = 0; i < normGuess.length; i++) {
+			if (normGuess[i] === remainingLetters[i]) {
+				statuses[i] = 'correct';
+				remainingLetters[i] = '#'; // Mark as used
+			}
+		}
+
+		// Then handle present letters, only if they remain in answer
+		for (let i = 0; i < normGuess.length; i++) {
+			if (statuses[i] !== 'correct') {
+				const remainingIdx = remainingLetters.indexOf(normGuess[i]);
+				if (remainingIdx !== -1) {
+					statuses[i] = 'present';
+					remainingLetters[remainingIdx] = '#'; // Mark as used
+				}
+			}
+		}
+
+		return statuses;
+	}
+
 	function getLetterStatus(guess: string, index: number, answerOverride?: string) {
-		const answer = answerOverride || normalizeWord(currentRoot.root);
-		if (guess[index] === answer[index]) return 'correct';
-		if (answer.includes(guess[index])) return 'present';
-		return 'absent';
+		return getGuessStatuses(guess)[index];
 	}
 
 	function handleKeyboardClick(letter: string) {
@@ -122,14 +149,6 @@
 		letterStatuses = {};
 		gameState = 'playing';
 		message = '';
-	}
-
-	function getGuessStatuses(guess: string): Array<'correct' | 'present' | 'absent'> {
-		const normGuess = normalizeWord(guess);
-		const normAnswer = normalizeWord(currentRoot.root);
-		return Array.from({ length: normGuess.length }, (_, i) =>
-			getLetterStatus(normGuess, i, normAnswer)
-		);
 	}
 
 	let messageDialog: HTMLDialogElement;
@@ -323,8 +342,8 @@
 	.message-content {
 		font-size: 1.2rem;
 		margin-bottom: 1.2rem;
-        width: 70vw;
-        max-width: 300px;
+		width: 70vw;
+		max-width: 300px;
 	}
 	.close-btn {
 		position: absolute;
