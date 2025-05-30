@@ -4,28 +4,6 @@
 	import Keyboard from '$lib/Keyboard.svelte';
 	import InputBlocks from '$lib/InputBlocks.svelte';
 
-	function getDailyRoot(): Root {
-		const today = new Date().toISOString().slice(0, 10);
-		// FNV-1a hash
-		let hash = 2166136261;
-		for (let i = 0; i < today.length; i++) {
-			hash ^= today.charCodeAt(i);
-			hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
-		}
-		const idx = Math.abs(hash) % roots.length;
-		return roots[idx];
-	}
-
-	const maxGuesses = 6;
-	let currentRoot: Root = getDailyRoot();
-	let guesses: string[] = [];
-	let rootLength = currentRoot.root.length;
-	let currentGuess = '';
-	let gameState: 'playing' | 'won' | 'lost' = 'playing';
-	let message = '';
-
-	let letterStatuses: Record<string, 'correct' | 'present' | 'absent' | undefined> = {};
-
 	const hebrewKeyboardRows: string[][] = [
 		Array.from('קראטוןםפ'),
 		Array.from('שדגכעיחלךף'),
@@ -39,6 +17,30 @@
 		ף: 'פ',
 		ץ: 'צ'
 	};
+
+	const maxGuesses = 6;
+	let currentRoot: Root = getDailyRoot();
+	let guesses: string[] = [];
+	let rootLength = currentRoot.root.length;
+	let currentGuess = '';
+	let gameState: 'playing' | 'won' | 'lost' = 'playing';
+	let message = '';
+	let normalizedRoots = roots.map(r => normalizeWord(r.root));
+
+	let letterStatuses: Record<string, 'correct' | 'present' | 'absent' | undefined> = {};
+
+	function getDailyRoot(): Root {
+		const today = new Date().toISOString().slice(0, 10);
+		// FNV-1a hash
+		let hash = 2166136261;
+		for (let i = 0; i < today.length; i++) {
+			hash ^= today.charCodeAt(i);
+			hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+		}
+		const idx = Math.abs(hash) % roots.length;
+		return roots[idx];
+	}
+	
 	function normalizeLetter(l: string) {
 		return finalToRegular[l] || l;
 	}
@@ -68,6 +70,10 @@
 		const normAnswer = normalizeWord(currentRoot.root);
 		if (normInput.length < 3 || normInput.length > 4) {
 			message = 'שורש חייב להיות 3 או 4 אותיות';
+			return;
+		}
+		if (!normalizedRoots.includes(normInput)) {
+			message = 'שורש לא קיים ברשימה';
 			return;
 		}
 		if (guesses.includes(input)) {
