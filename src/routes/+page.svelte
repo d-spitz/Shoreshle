@@ -6,9 +6,11 @@
 
 	function getDailyRoot(): Root {
 		const today = new Date().toISOString().slice(0, 10);
-		let hash = 0;
+		// FNV-1a hash
+		let hash = 2166136261;
 		for (let i = 0; i < today.length; i++) {
-			hash = today.charCodeAt(i) + ((hash << 5) - hash);
+			hash ^= today.charCodeAt(i);
+			hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
 		}
 		const idx = Math.abs(hash) % roots.length;
 		return roots[idx];
