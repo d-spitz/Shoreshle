@@ -19,7 +19,7 @@
 	};
 
 	const maxGuesses = 6;
-	let currentRoot: Root = roots[0] ?? getDailyRoot();
+	let currentRoot: Root = getDailyRoot();
 	let guesses: string[] = [];
 	let rootLength = currentRoot.root.length;
 	let currentGuess = '';
