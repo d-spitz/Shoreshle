@@ -5,9 +5,9 @@
 	import InputBlocks from '$lib/InputBlocks.svelte';
 
 	const hebrewKeyboardRows: string[][] = [
-		Array.from('קראטוןםפ'),
-		Array.from('שדגכעיחלךף'),
-		Array.from('זסבהנמצתץ')
+		Array.from('קראטופ'),
+		Array.from('שדגכעיחל'),
+		Array.from('זסבהנמצת')
 	];
 
 	const finalToRegular: Record<string, string> = {
