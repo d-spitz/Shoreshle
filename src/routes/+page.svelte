@@ -25,7 +25,7 @@
 	let rootLength = $derived(currentRoot.root.length);
 	let currentGuess = $state('');
 	let gameState = $state<'playing' | 'won' | 'lost'>('playing');
-	let dialogMessage = $state('');
+	let showDialog = $state(false);
 	let alertMessage = $state('');
 	let showAlert = $state(false);
 	let alertType = $state<'success' | 'warning'>('warning');
@@ -94,12 +94,23 @@
 		updateLetterStatuses(input);
 		if (normInput === normAnswer) {
 			gameState = 'won';
-			dialogMessage = 'ניחשת נכון!';
+			showDialog = true;
+			if (typeof document !== 'undefined') {
+				setCookie(getTodayKey(), 'won');
+				setGuessesCookie();
+			}
 		} else if (guesses.length >= maxGuesses) {
 			gameState = 'lost';
-			dialogMessage = `הפסדת! השורש היה: ${currentRoot.root}`;
+			showDialog = true;
+			if (typeof document !== 'undefined') {
+				setCookie(getTodayKey(), 'lost');
+				setGuessesCookie();
+			}
 		} else {
-			dialogMessage = '';
+			showDialog = false;
+			if (typeof document !== 'undefined') {
+				setGuessesCookie();
+			}
 		}
 		currentGuess = '';
 	}
@@ -158,13 +169,13 @@
 		currentGuess = '';
 		letterStatuses = {};
 		gameState = 'playing';
-		dialogMessage = '';
+		showDialog = false;
 	}
 
 	let messageDialog = $state<HTMLDialogElement>();
 
 	$effect(() => {
-		if (dialogMessage && messageDialog && !messageDialog.open) {
+		if (showDialog && messageDialog && !messageDialog.open) {
 			messageDialog.showModal();
 		}
 	});
@@ -226,10 +237,72 @@
 			showAlert = true;
 		}
 	}
+
+	// Cookie helpers
+	function setCookie(name: string, value: string, days = 365) {
+		const expires = new Date(Date.now() + days * 864e5).toUTCString();
+		document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+	}
+	function getCookie(name: string): string | undefined {
+		return document.cookie
+			.split('; ')
+			.find((row) => row.startsWith(name + '='))
+			?.split('=')[1];
+	}
+	function getTodayKey() {
+		return 'shoreshle_' + new Date().toISOString().slice(0, 10);
+	}
+	function checkCookieGameState() {
+		const key = getTodayKey();
+		const val = getCookie(key);
+		if (val === 'won') {
+			gameState = 'won';
+			showDialog = true;
+			return true;
+		} else if (val === 'lost') {
+			gameState = 'lost';
+			showDialog = true;
+			return true;
+		}
+		return false;
+	}
+
+	// Save gameState in guesses cookie for emoji grid
+	function setGuessesCookie() {
+		const key = getTodayKey() + '_guesses';
+		setCookie(key, JSON.stringify(guesses), 365);
+	}
+	function getGuessesFromCookie(): string[] {
+		const key = getTodayKey() + '_guesses';
+		const val = getCookie(key);
+		if (val) {
+			try {
+				return JSON.parse(decodeURIComponent(val));
+			} catch {
+				return [];
+			}
+		}
+		return [];
+	}
+
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			checkCookieGameState();
+			const savedGuesses = getGuessesFromCookie();
+			if (savedGuesses.length > 0 && guesses.length === 0) {
+				guesses = savedGuesses;
+			}
+		}
+	});
 </script>
 
 <main class="container">
-	<Alert message={alertMessage} show={showAlert} type={alertType} onClose={() => (showAlert = false)} />
+	<Alert
+		message={alertMessage}
+		show={showAlert}
+		type={alertType}
+		onClose={() => (showAlert = false)}
+	/>
 	<div class="hint-details">
 		{currentRoot.meaning}
 	</div>
@@ -262,7 +335,7 @@
 		currentInputLength={currentGuess.length}
 		requiredLength={rootLength}
 	/>
-	<dialog bind:this={messageDialog} class="message-dialog" onclose={() => (dialogMessage = '')}>
+	<dialog bind:this={messageDialog} class="message-dialog" onclose={() => (showDialog = false)}>
 		{#if gameState !== 'playing'}
 			<div class="dialog-header">
 				<span class="game-title">שורשל</span>
