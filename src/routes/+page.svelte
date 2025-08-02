@@ -20,17 +20,17 @@
 	};
 
 	const maxGuesses = 6;
-	let currentRoot: Root = getDailyRoot();
-	let guesses: string[] = [];
-	let rootLength = currentRoot.root.length;
-	let currentGuess = '';
-	let gameState: 'playing' | 'won' | 'lost' = 'playing';
-	let dialogMessage = '';
-	let alertMessage = '';
-	let showAlert = false;
-	let normalizedRoots = roots.map((r) => normalizeWord(r.root));
+	let currentRoot = $state(getDailyRoot());
+	let guesses = $state<string[]>([]);
+	let rootLength = $derived(currentRoot.root.length);
+	let currentGuess = $state('');
+	let gameState = $state<'playing' | 'won' | 'lost'>('playing');
+	let dialogMessage = $state('');
+	let alertMessage = $state('');
+	let showAlert = $state(false);
+	let normalizedRoots = $derived(roots.map((r) => normalizeWord(r.root)));
 
-	let letterStatuses: Record<string, 'correct' | 'present' | 'absent' | undefined> = {};
+	let letterStatuses = $state<Record<string, 'correct' | 'present' | 'absent' | undefined>>({});
 
 	function getDailyRoot(): Root {
 		const today = new Date().toISOString().slice(0, 10);
@@ -72,13 +72,13 @@
 		const normInput = normalizeWord(input);
 		const normAnswer = normalizeWord(currentRoot.root);
 		if (normInput.length < 3 || normInput.length > 4) {
-			alertMessage = 'שורש חייב להיות 3 או 4 אותיות';
+			alertMessage = 'השורש חייב להיות 3 או 4 אותיות';
 			showAlert = true;
 			currentGuess = '';
 			return;
 		}
 		if (!normalizedRoots.includes(normInput)) {
-			alertMessage = 'שורש לא קיים ברשימה';
+			alertMessage = 'השורש לא קיים ברשימה';
 			showAlert = true;
 			currentGuess = '';
 			return;
@@ -160,10 +160,12 @@
 		dialogMessage = '';
 	}
 
-	let messageDialog: HTMLDialogElement;
-	$: if (dialogMessage && messageDialog && !messageDialog.open) {
-		messageDialog.showModal();
-	} // TODO make this svelte 5
+	let messageDialog = $state<HTMLDialogElement>();
+	$effect(() => {
+		if (dialogMessage && messageDialog && !messageDialog.open) {
+			messageDialog.showModal();
+		}
+	});
 </script>
 
 <main class="container">
@@ -200,18 +202,18 @@
 		currentInputLength={currentGuess.length}
 		requiredLength={rootLength}
 	/>
-	<dialog bind:this={messageDialog} class="message-dialog" on:close={() => (dialogMessage = '')}>
+	<dialog bind:this={messageDialog} class="message-dialog" onclose={() => (dialogMessage = '')}>
 		<div class="message-content">{dialogMessage}</div>
 		{#if gameState !== 'playing'}
 			<button
 				class="restart-btn"
-				on:click={() => {
+				onclick={() => {
 					restart();
-					messageDialog.close();
+					if (messageDialog) messageDialog.close();
 				}}>שחק שוב</button
 			>
 		{/if}
-		<button class="close-btn" on:click={() => messageDialog.close()}>✕</button>
+		<button class="close-btn" onclick={() => { if (messageDialog) messageDialog.close(); }}>✕</button>
 	</dialog>
 </main>
 
