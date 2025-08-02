@@ -3,6 +3,7 @@
 	import type { Root } from '$lib/models/root';
 	import Keyboard from '$lib/Keyboard.svelte';
 	import InputBlocks from '$lib/InputBlocks.svelte';
+	import Alert from '$lib/Alert.svelte';
 
 	const hebrewKeyboardRows: string[][] = [
 		Array.from('קראטופ'),
@@ -24,7 +25,9 @@
 	let rootLength = currentRoot.root.length;
 	let currentGuess = '';
 	let gameState: 'playing' | 'won' | 'lost' = 'playing';
-	let message = '';
+	let dialogMessage = '';
+	let alertMessage = '';
+	let showAlert = false;
 	let normalizedRoots = roots.map((r) => normalizeWord(r.root));
 
 	let letterStatuses: Record<string, 'correct' | 'present' | 'absent' | undefined> = {};
@@ -69,27 +72,33 @@
 		const normInput = normalizeWord(input);
 		const normAnswer = normalizeWord(currentRoot.root);
 		if (normInput.length < 3 || normInput.length > 4) {
-			message = 'שורש חייב להיות 3 או 4 אותיות';
+			alertMessage = 'שורש חייב להיות 3 או 4 אותיות';
+			showAlert = true;
+			currentGuess = '';
 			return;
 		}
 		if (!normalizedRoots.includes(normInput)) {
-			message = 'שורש לא קיים ברשימה';
+			alertMessage = 'שורש לא קיים ברשימה';
+			showAlert = true;
+			currentGuess = '';
 			return;
 		}
 		if (guesses.includes(input)) {
-			message = 'כבר ניסית את השורש הזה';
+			alertMessage = 'כבר ניסית את השורש הזה';
+			showAlert = true;
+			currentGuess = '';
 			return;
 		}
 		guesses = [...guesses, input];
 		updateLetterStatuses(input);
 		if (normInput === normAnswer) {
 			gameState = 'won';
-			message = 'ניחשת נכון!';
+			dialogMessage = 'ניחשת נכון!';
 		} else if (guesses.length >= maxGuesses) {
 			gameState = 'lost';
-			message = `הפסדת! השורש היה: ${currentRoot.root}`;
+			dialogMessage = `הפסדת! השורש היה: ${currentRoot.root}`;
 		} else {
-			message = '';
+			dialogMessage = '';
 		}
 		currentGuess = '';
 	}
@@ -148,17 +157,17 @@
 		currentGuess = '';
 		letterStatuses = {};
 		gameState = 'playing';
-		message = '';
+		dialogMessage = '';
 	}
 
 	let messageDialog: HTMLDialogElement;
-
-	$: if (message && messageDialog && !messageDialog.open) {
+	$: if (dialogMessage && messageDialog && !messageDialog.open) {
 		messageDialog.showModal();
-	}
+	} // TODO make this svelte 5
 </script>
 
 <main class="container">
+	<Alert message={alertMessage} show={showAlert} onClose={() => (showAlert = false)} />
 	<div class="hint-details">
 		{currentRoot.meaning}
 	</div>
@@ -191,8 +200,8 @@
 		currentInputLength={currentGuess.length}
 		requiredLength={rootLength}
 	/>
-	<dialog bind:this={messageDialog} class="message-dialog" on:close={() => (message = '')}>
-		<div class="message-content">{message}</div>
+	<dialog bind:this={messageDialog} class="message-dialog" on:close={() => (dialogMessage = '')}>
+		<div class="message-content">{dialogMessage}</div>
 		{#if gameState !== 'playing'}
 			<button
 				class="restart-btn"
