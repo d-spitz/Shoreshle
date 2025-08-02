@@ -368,22 +368,10 @@
 			</div>
 			<div class="dialog-actions">
 				<button class="share-btn" onclick={handleShare} aria-label="שתף">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						style="vertical-align: middle;"
-					></svg>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>
 				</button>
 				<button class="copy-btn" onclick={handleCopy} aria-label="העתק">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						style="vertical-align: middle;"
-					></svg>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-icon lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
 				</button>
 			</div>
 		{/if}
@@ -559,7 +547,7 @@
 	}
 	.share-btn:focus,
 	.copy-btn:focus {
-		outline: 2px solid var(--btn-bg);
+		outline: 1px solid var(--box-bg);
 	}
 	.close-btn:hover {
 		background: var(--box-bg);

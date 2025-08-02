@@ -16,12 +16,12 @@
 				<button
 					type="button"
 					class="alephbet-key {letterStatuses[letter]}"
-					on:click={() => onKey(letter)}
+					onclick={() => onKey(letter)}
 					{disabled}>{letter}</button
 				>
 			{/each}
 			{#if rowIdx === 0}
-				<button type="button" class="alephbet-key special-key" on:click={onBackspace} {disabled}
+				<button type="button" class="alephbet-key special-key" onclick={onBackspace} {disabled}
 					>⌫</button
 				>
 			{/if}
@@ -29,7 +29,7 @@
 				<button
 					type="button"
 					class="alephbet-key enter-key"
-					on:click={onEnter}
+					onclick={onEnter}
 					disabled={disabled || currentInputLength !== requiredLength}>⏎</button
 				>
 			{/if}
