@@ -28,6 +28,7 @@
 	let dialogMessage = $state('');
 	let alertMessage = $state('');
 	let showAlert = $state(false);
+	let alertType = $state<'success' | 'warning'>('warning');
 	let normalizedRoots = $derived(roots.map((r) => normalizeWord(r.root)));
 
 	let letterStatuses = $state<Record<string, 'correct' | 'present' | 'absent' | undefined>>({});
@@ -192,8 +193,7 @@
 			month: '2-digit',
 			year: '2-digit'
 		});
-		const result = gameState === 'won' ? 'ניצחון!' : 'הפסד!';
-		return `שורשל\n${dateStr} | ${guesses.length}/${maxGuesses}\n${result}\n${getEmojiGrid()}`;
+		return `שורשל\n${dateStr} | ${guesses.length}/${maxGuesses}\n${getEmojiGrid()}`;
 	}
 
 	async function handleShare() {
@@ -210,8 +210,7 @@
 		} else {
 			alert('לא ניתן לשתף בדפדפן זה');
 		}
-		alertMessage = 'ההישג הועתק!';
-		showAlert = true;
+		// Do not show alert for share
 	}
 
 	async function handleCopy() {
@@ -219,15 +218,18 @@
 		if (navigator.clipboard) {
 			await navigator.clipboard.writeText(text);
 			alertMessage = 'ההישג הועתק!';
+			alertType = 'success';
 			showAlert = true;
 		} else {
-			alert('לא ניתן להעתיק בדפדפן זה');
+			alertMessage = 'לא ניתן להעתיק בדפדפן זה';
+			alertType = 'warning';
+			showAlert = true;
 		}
 	}
 </script>
 
 <main class="container">
-	<Alert message={alertMessage} show={showAlert} onClose={() => (showAlert = false)} />
+	<Alert message={alertMessage} show={showAlert} type={alertType} onClose={() => (showAlert = false)} />
 	<div class="hint-details">
 		{currentRoot.meaning}
 	</div>
