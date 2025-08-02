@@ -161,11 +161,69 @@
 	}
 
 	let messageDialog = $state<HTMLDialogElement>();
+
 	$effect(() => {
 		if (dialogMessage && messageDialog && !messageDialog.open) {
 			messageDialog.showModal();
 		}
 	});
+
+	// Emoji grid for sharing
+	function getEmojiGrid() {
+		// Use colored squares for each guess
+		const colorMap = {
+			correct: '🟩',
+			present: '🟨',
+			absent: '⬜'
+		};
+		return guesses
+			.map((guess) =>
+				getGuessStatuses(guess)
+					.toReversed()
+					.map((status) => colorMap[status])
+					.join('')
+			)
+			.join('\n');
+	}
+
+	function getShareText() {
+		const dateStr = new Date().toLocaleDateString('he-IL', {
+			day: '2-digit',
+			month: '2-digit',
+			year: '2-digit'
+		});
+		const result = gameState === 'won' ? 'ניצחון!' : 'הפסד!';
+		return `שורשל\n${dateStr} | ${guesses.length}/${maxGuesses}\n${result}\n${getEmojiGrid()}`;
+	}
+
+	async function handleShare() {
+		const text = getShareText();
+		if (navigator.share) {
+			try {
+				await navigator.share({ text });
+			} catch (e) {
+				// fallback to clipboard
+				await navigator.clipboard.writeText(text);
+			}
+		} else if (navigator.clipboard) {
+			await navigator.clipboard.writeText(text);
+		} else {
+			alert('לא ניתן לשתף בדפדפן זה');
+		}
+		alertMessage = 'ההישג הועתק!';
+		showAlert = true;
+	}
+
+	async function handleCopy() {
+		const text = getShareText();
+		if (navigator.clipboard) {
+			await navigator.clipboard.writeText(text);
+			alertMessage = 'ההישג הועתק!';
+			showAlert = true;
+		} else {
+			alert('לא ניתן להעתיק בדפדפן זה');
+		}
+	}
 </script>
 
 <main class="container">
@@ -203,17 +261,63 @@
 		requiredLength={rootLength}
 	/>
 	<dialog bind:this={messageDialog} class="message-dialog" onclose={() => (dialogMessage = '')}>
-		<div class="message-content">{dialogMessage}</div>
 		{#if gameState !== 'playing'}
-			<button
-				class="restart-btn"
-				onclick={() => {
-					restart();
-					if (messageDialog) messageDialog.close();
-				}}>שחק שוב</button
-			>
+			<div class="dialog-header">
+				<span class="game-title">שורשל</span>
+				<span class="game-date"
+					>{new Date().toLocaleDateString('he-IL', {
+						day: '2-digit',
+						month: '2-digit',
+						year: '2-digit'
+					})}</span
+				>
+				<span class="game-guesses">{guesses.length}/{maxGuesses}</span>
+			</div>
+			<div class="message-content">
+				{#if gameState === 'won'}
+					ניחשת נכון!
+				{:else}
+					הפסדת! השורש היה: <strong>{currentRoot.root.split('').join('.')}</strong>
+				{/if}
+			</div>
+			<div class="emoji-grid">
+				{#each guesses as guess}
+					<div class="emoji-row">
+						{#each getGuessStatuses(guess) as status}
+							<span class="emoji-cell {status}"
+								>{status === 'correct' ? '🟩' : status === 'present' ? '🟨' : '⬜'}</span
+							>
+						{/each}
+					</div>
+				{/each}
+			</div>
+			<div class="dialog-actions">
+				<button class="share-btn" onclick={handleShare} aria-label="שתף">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						style="vertical-align: middle;"
+					></svg>
+				</button>
+				<button class="copy-btn" onclick={handleCopy} aria-label="העתק">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						style="vertical-align: middle;"
+					></svg>
+				</button>
+			</div>
 		{/if}
-		<button class="close-btn" onclick={() => { if (messageDialog) messageDialog.close(); }}>✕</button>
+		<button
+			class="close-btn"
+			onclick={() => {
+				if (messageDialog) messageDialog.close();
+			}}>✕</button
+		>
 	</dialog>
 </main>
 
@@ -348,8 +452,48 @@
 		border-radius: 0.3rem;
 		transition: background 0.15s;
 	}
+	.share-btn {
+		font-size: 1.1rem;
+		border-radius: 0.4rem;
+		border: none;
+		background: var(--btn-bg);
+		color: #fff;
+		cursor: pointer;
+		transition: background 0.2s;
+		display: inline-block;
+		margin-top: 1rem;
+		padding: 0.5rem 1.2rem;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+	}
+	.copy-btn {
+		font-size: 1.1rem;
+		border-radius: 0.4rem;
+		border: none;
+		background: var(--btn-bg);
+		color: #fff;
+		cursor: pointer;
+		transition: background 0.2s;
+		display: inline-block;
+		margin-top: 1rem;
+		padding: 0.5rem 1.2rem;
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+	}
+	.share-btn:active,
+	.copy-btn:active {
+		background: var(--btn-bg-disabled);
+	}
+	.share-btn:focus,
+	.copy-btn:focus {
+		outline: 2px solid var(--btn-bg);
+	}
 	.close-btn:hover {
 		background: var(--box-bg);
+	}
+	.dialog-actions {
+		display: flex;
+		gap: 0.5rem;
+		justify-content: center;
+		margin-top: 1rem;
 	}
 	@media (max-width: 600px) {
 		.message-dialog {
