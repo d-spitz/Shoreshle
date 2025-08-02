@@ -39,7 +39,6 @@
 
 <style>
 	.alephbet-keyboard {
-		margin: 1.2rem 0 0.5rem 0;
 		user-select: none;
 		max-width: 100vw;
 		width: 100%;
@@ -117,7 +116,6 @@
 
 	@media (max-width: 600px) {
 		.alephbet-keyboard {
-			margin: 0.5rem 0 0 0;
 			overflow: visible;
 		}
 		.alephbet-key {

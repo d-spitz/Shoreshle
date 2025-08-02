@@ -159,10 +159,9 @@
 </script>
 
 <main class="container">
-	<details class="hint-details">
-		<summary>רמז</summary>
-		<div class="hint-content">{currentRoot.meaning}</div>
-	</details>
+	<div class="hint-details">
+		{currentRoot.meaning}
+	</div>
 	<div class="guesses">
 		{#each Array(maxGuesses) as _, rowIdx}
 			{#if rowIdx < guesses.length}
@@ -262,6 +261,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		gap: 1rem;
 		align-items: center;
 	}
 
@@ -294,37 +294,16 @@
 		margin-top: 1rem;
 		padding: 0.5rem 1.2rem;
 	}
-
 	.hint-details {
-		margin-bottom: 1.5rem;
 		background: var(--box-bg);
 		border-radius: 0.5rem;
 		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-		padding: 0.2rem 0.7rem 0.5rem 0.7rem;
+		padding: 0.5rem;
 		color: var(--hint);
 		border: 1px solid var(--box-border);
 		transition: background 0.2s;
 		width: 9rem;
 		text-align: center;
-	}
-	.hint-details[open] {
-		background: var(--input-bg);
-		color: var(--foreground);
-	}
-	.hint-details summary {
-		cursor: pointer;
-		font-size: 1.1rem;
-		font-weight: 600;
-		outline: none;
-		padding: 0.3rem 0;
-		color: var(--hint);
-		user-select: none;
-	}
-	.hint-content {
-		font-size: 1.1rem;
-		margin-top: 0.5rem;
-		color: var(--foreground);
-		padding-bottom: 0.2rem;
 	}
 	.message-dialog {
 		min-width: 220px;
