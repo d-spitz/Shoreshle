@@ -6,19 +6,19 @@
 	export let statuses: Array<'correct' | 'present' | 'absent'> | undefined = undefined;
 </script>
 
-<div class="input-blocks">
+<div class="input-blocks" dir="rtl">
 	{#each Array(rootLength) as _, i}
 		{#if statuses}
-			<span class="letter {statuses[rootLength - 1 - i]}">
-				{guess[rootLength - 1 - i] || ''}
+			<span class="letter {statuses[i]}">
+				{guess[i] || ''}
 			</span>
 		{:else}
 			<span
-				class="letter {disabled ? 'disabled-row' : ''} {filled && guess[rootLength - 1 - i]
+				class="letter {disabled ? 'disabled-row' : ''} {filled && guess[i]
 					? 'filled'
 					: ''}"
 			>
-				{guess[rootLength - 1 - i] || ''}
+				{guess[i] || ''}
 			</span>
 		{/if}
 	{/each}

@@ -2,7 +2,7 @@
 	import { fade } from "svelte/transition";
 
   let { message, show = false, onClose = () => {}, type = 'warning' } = $props();
-  let timeout: NodeJS.Timeout | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   $effect(() => {
     if (show) {
