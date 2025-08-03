@@ -356,7 +356,7 @@
 			<div class="emoji-grid">
 				{#each guesses as guess}
 					<div class="emoji-row">
-						{#each getGuessStatuses(guess) as status}
+						{#each getGuessStatuses(guess).toReversed() as status}
 							<span class="emoji-cell {status}"
 								>{status === 'correct' ? '🟩' : status === 'present' ? '🟨' : '⬜'}</span
 							>
