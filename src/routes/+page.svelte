@@ -213,7 +213,7 @@
 		let shared = false;
 		try {
 			if (navigator.share) {
-				await navigator.share({ text, url: shareUrl });
+				await navigator.share({ text, url: shareUrl, title: document?.title });
 				shared = true;
 			}
 		} catch {}
