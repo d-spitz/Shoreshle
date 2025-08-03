@@ -10,7 +10,37 @@
 </head>
 
 <body data-sveltekit-preload-data="hover">
-    <h1>שורשל</h1>
+    <div class="header-row">
+        <h1>שורשל</h1>
+        <button id="info-btn" aria-label="How to play" onclick="document.getElementById('info-dialog').showModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4" />
+                <path d="M12 8h.01" />
+            </svg>
+        </button>
+    </div>
+    <dialog id="info-dialog" dir="ltr">
+        <header style="display: flex; align-items: center; gap: 1rem;">
+            <h2 style="flex-grow: 1;">How to Play Shoreshle</h2>
+            <form method="dialog">
+                <button class="close-btn" aria-label="Close">✕</button>
+            </form>
+        </header>
+        <div id="readme-html">
+            <p>Shoreshle is a word-guessing game inspired by Wordle. Each day, you are given an English semantic
+                definition, and your goal is to guess the corresponding Hebrew root (shoresh).</p>
+            <ul>
+                <li>Read the English definition provided.</li>
+                <li>Enter your guess for the Hebrew root (shoresh) in Hebrew letters.</li>
+                <li>After each guess, you will receive feedback to help you narrow down the correct root.</li>
+                <li>Keep guessing until you find the correct Hebrew root.</li>
+            </ul>
+            <p><strong>Credit:</strong> Hebrew roots for Shoreshle are sourced from <a href="https://pealim.com"
+                    target="_blank" rel="noopener">pealim.com</a>.</p>
+        </div>
+    </dialog>
     <div class="container">%sveltekit.body%</div>
 </body>
 
@@ -34,13 +64,62 @@
         overflow-x: hidden;
     }
 
+    .header-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-top: 1rem;
+        position: relative;
+    }
+
+    .header-row h1 {
+        flex: 0 0 auto;
+    }
+
+    #info-btn, .close-btn {
+        flex: 0 0 auto;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: var(--foreground);
+        cursor: pointer;
+        padding: 0.3em 0.6em;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+
+    .close-btn:hover,
+    #info-btn:focus,
+    .close-btn:focus {
+        background: rgba(0, 0, 0, 0.07);
+        outline: none;
+    }
+
+    dialog {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 1.2em 1.5em;
+        max-width: 400px;
+        color: var(--foreground);
+        background: var(--background);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    dialog::backdrop {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    #readme-html ul {
+        margin: 0.7em 0 1em 1.2em;
+    }
+
+    #readme-html a {
+        color: #0077cc;
+        text-decoration: underline;
+    }
+
     h1 {
         flex: 0 0 auto;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 1rem;
         font-size: 2.2rem;
         color: var(--foreground);
         letter-spacing: 0.1em;
