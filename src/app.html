@@ -87,8 +87,16 @@
     }
 
     body {
-        background: var(--background);
+        background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 35%, #fbc2eb 70%, #f7faff 100%);
+        background-attachment: fixed;
         overflow-x: hidden;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        body {
+            background: radial-gradient(circle at 20% 30%, #232526 0%, #5b3262 35%, #232526 80%, #181a1b 100%);
+            background-attachment: fixed;
+        }
     }
 
     .flex-center {
