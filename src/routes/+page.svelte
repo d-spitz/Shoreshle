@@ -20,6 +20,7 @@
 	};
 
 	const maxGuesses = 6;
+	const shareUrl = 'https://d-spitz.github.io/Shoreshle/';
 	let currentRoot = $state(getDailyRoot());
 	let guesses = $state<string[]>([]);
 	let rootLength = $derived(currentRoot.root.length);
@@ -209,19 +210,16 @@
 
 	async function handleShare() {
 		const text = getShareText();
-		if (navigator.share) {
-			try {
-				await navigator.share({ text });
-			} catch (e) {
-				// fallback to clipboard
-				await navigator.clipboard.writeText(text);
+		let shared = false;
+		try {
+			if (navigator.share) {
+				await navigator.share({ text, url: shareUrl });
+				shared = true;
 			}
-		} else if (navigator.clipboard) {
-			await navigator.clipboard.writeText(text);
-		} else {
+		} catch {}
+		if (!shared) {
 			alert('לא ניתן לשתף בדפדפן זה');
 		}
-		// Do not show alert for share
 	}
 
 	async function handleCopy() {
@@ -368,10 +366,39 @@
 			</div>
 			<div class="dialog-actions">
 				<button class="share-btn" onclick={handleShare} aria-label="שתף">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M12 2v13"/><path d="m16 6-4-4-4 4"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						style="vertical-align: middle;"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						><path d="M12 2v13" /><path d="m16 6-4-4-4 4" /><path
+							d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"
+						/></svg
+					>
 				</button>
 				<button class="copy-btn" onclick={handleCopy} aria-label="העתק">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="vertical-align: middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy-icon lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						style="vertical-align: middle;"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="lucide lucide-copy-icon lucide-copy"
+						><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path
+							d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+						/></svg
+					>
 				</button>
 			</div>
 		{/if}
