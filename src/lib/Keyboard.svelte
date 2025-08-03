@@ -22,7 +22,15 @@
 
 <div class="alephbet-keyboard">
 	{#each rows as row, rowIdx}
-		<div class="alephbet-row" dir="rtl">
+		<div class="alephbet-row" dir="ltr">
+			{#each row as letter}
+				<button
+					type="button"
+					class="alephbet-key {letterStatuses[letter]}"
+					onclick={() => onKey(letter)}
+					{disabled}>{letter}</button
+				>
+			{/each}
 			{#if rowIdx === 0}
 				<button type="button" class="alephbet-key special-key" onclick={onBackspace} {disabled}
 					>⌫</button
@@ -36,14 +44,6 @@
 					disabled={disabled || currentInputLength !== requiredLength}>⏎</button
 				>
 			{/if}
-			{#each row as letter}
-				<button
-					type="button"
-					class="alephbet-key {letterStatuses[letter]}"
-					onclick={() => onKey(letter)}
-					{disabled}>{letter}</button
-				>
-			{/each}
 		</div>
 	{/each}
 </div>
