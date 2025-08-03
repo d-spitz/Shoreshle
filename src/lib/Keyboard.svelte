@@ -1,51 +1,51 @@
 <script lang="ts">
-    let {
-        rows,
-        letterStatuses = {},
-        onKey,
-        onBackspace,
-        onEnter,
-        disabled = false,
-        currentInputLength = 0,
-        requiredLength = 0
-    }: {
-        rows: string[][];
-        letterStatuses?: Record<string, 'correct' | 'present' | 'absent' | undefined>;
-        onKey: (letter: string) => void;
-        onBackspace: () => void;
-        onEnter: () => void;
-        disabled?: boolean;
-        currentInputLength?: number;
-        requiredLength?: number;
-    } = $props();
+	let {
+		rows,
+		letterStatuses = {},
+		onKey,
+		onBackspace,
+		onEnter,
+		disabled = false,
+		currentInputLength = 0,
+		requiredLength = 0
+	}: {
+		rows: string[][];
+		letterStatuses?: Record<string, 'correct' | 'present' | 'absent' | undefined>;
+		onKey: (letter: string) => void;
+		onBackspace: () => void;
+		onEnter: () => void;
+		disabled?: boolean;
+		currentInputLength?: number;
+		requiredLength?: number;
+	} = $props();
 </script>
 
 <div class="alephbet-keyboard">
-    {#each rows as row, rowIdx}
-        <div class="alephbet-row" dir="rtl">
-            {#if rowIdx === 0}
-                <button type="button" class="alephbet-key special-key" onclick={onBackspace} {disabled}
-                    >⌫</button
-                >
-            {/if}
-            {#if rowIdx === 2}
-                <button
-                    type="button"
-                    class="alephbet-key enter-key"
-                    onclick={onEnter}
-                    disabled={disabled || currentInputLength !== requiredLength}>⏎</button
-                >
-            {/if}
-            {#each row as letter}
-                <button
-                    type="button"
-                    class="alephbet-key {letterStatuses[letter]}"
-                    onclick={() => onKey(letter)}
-                    {disabled}>{letter}</button
-                >
-            {/each}
-        </div>
-    {/each}
+	{#each rows as row, rowIdx}
+		<div class="alephbet-row" dir="rtl">
+			{#if rowIdx === 0}
+				<button type="button" class="alephbet-key special-key" onclick={onBackspace} {disabled}
+					>⌫</button
+				>
+			{/if}
+			{#if rowIdx === 2}
+				<button
+					type="button"
+					class="alephbet-key enter-key"
+					onclick={onEnter}
+					disabled={disabled || currentInputLength !== requiredLength}>⏎</button
+				>
+			{/if}
+			{#each row as letter}
+				<button
+					type="button"
+					class="alephbet-key {letterStatuses[letter]}"
+					onclick={() => onKey(letter)}
+					{disabled}>{letter}</button
+				>
+			{/each}
+		</div>
+	{/each}
 </div>
 
 <style>

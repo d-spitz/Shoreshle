@@ -1,9 +1,17 @@
 <script lang="ts">
-	export let guess: string = '';
-	export let rootLength: number = 3;
-	export let filled: boolean = false; // for current guess, highlight filled letters
-	export let disabled: boolean = false; // for past guesses, show disabled look
-	export let statuses: Array<'correct' | 'present' | 'absent'> | undefined = undefined;
+	let {
+		guess = '',
+		rootLength = 3,
+		filled = false, // for current guess, highlight filled letters
+		disabled = false, // for past guesses, show disabled look
+		statuses = undefined
+	}: {
+		guess?: string;
+		rootLength?: number;
+		filled?: boolean;
+		disabled?: boolean;
+		statuses?: Array<'correct' | 'present' | 'absent'> | undefined;
+	} = $props();
 </script>
 
 <div class="input-blocks" dir="rtl">
@@ -13,11 +21,7 @@
 				{guess[i] || ''}
 			</span>
 		{:else}
-			<span
-				class="letter {disabled ? 'disabled-row' : ''} {filled && guess[i]
-					? 'filled'
-					: ''}"
-			>
+			<span class="letter {disabled ? 'disabled-row' : ''} {filled && guess[i] ? 'filled' : ''}">
 				{guess[i] || ''}
 			</span>
 		{/if}
