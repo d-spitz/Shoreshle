@@ -210,15 +210,14 @@
 
 	async function handleShare() {
 		const text = getShareText();
-		let shared = false;
-		try {
-			if (navigator.share) {
-				await navigator.share({ text, url: shareUrl, title: document?.title });
-				shared = true;
-			}
-		} catch {}
-		if (!shared) {
+		if (!navigator.share) {
 			alert('לא ניתן לשתף בדפדפן זה');
+			return;
+		}
+		try {
+			await navigator.share({ text, url: shareUrl, title: document?.title });
+		} catch (e) {
+			console.error(e);
 		}
 	}
 
