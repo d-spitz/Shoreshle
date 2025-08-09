@@ -12,7 +12,7 @@
     %sveltekit.head%
 </head>
 
-<body data-sveltekit-preload-data="hover" class="flex-center flex-col" style="gap: 1rem;">
+<body data-sveltekit-preload-data="hover" class="flex-col">
     <header class="flex-center">
         <h1>שורשל</h1>
     </header>
@@ -117,16 +117,26 @@
         }
     }
 
+    html {
+        block-size: 100%;
+    }
+
     body {
         background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 35%, #fbc2eb 70%, #f7faff 100%);
         background-attachment: fixed;
         overflow-x: hidden;
+        block-size: 100%;
+        margin: 0;
+        padding: 0 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
     }
 
     @media (prefers-color-scheme: dark) {
         body {
             background: radial-gradient(circle at 20% 30%, #232526 0%, #5b3262 35%, #232526 80%, #181a1b 100%);
-            background-attachment: fixed;
         }
     }
 
