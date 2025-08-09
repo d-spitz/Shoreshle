@@ -10,12 +10,12 @@
     %sveltekit.head%
 </head>
 
-<body data-sveltekit-preload-data="hover">
+<body data-sveltekit-preload-data="hover" class="flex-center flex-col" style="gap: 1rem;">
     <header class="flex-center">
         <h1>שורשל</h1>
     </header>
-    <div class="container">%sveltekit.body%</div>
-    <footer class="flex-center" style="margin-top: 1rem; gap: 1rem;">
+    <main class="container">%sveltekit.body%</main>
+    <footer class="flex-center" style="gap: 1rem;">
         <button class="btn" aria-labelledby="github-link">
             <a href="https://github.com/d-spitz/Shoreshle" target="_blank" style="color: inherit" id="github-link"
                 aria-label="Github repository">
@@ -74,15 +74,44 @@
 
 <style>
     :root {
-        --background: #fff;
+        --background: #f5f6fa;
+        --container-bg: #f0f1f6;
         --foreground: #2d2d2d;
-        font-family: 'Assistant', Arial, sans-serif;
+        --hint: #666;
+        --box-bg: #f0f0f0;
+        --box-border: #e0e0e0;
+        --box-correct: #4caf50;
+        --box-correct-border: #388e3c;
+        --box-present: #ffeb3b;
+        --box-present-border: #fbc02d;
+        --box-absent: #e0e0e0;
+        --box-absent-border: #bdbdbd;
+        --input-bg: #f9f9f9;
+        --input-border: #bbb;
+        --btn-bg: #1976d2;
+        --btn-bg-disabled: #90caf9;
+        --btn-bg-restart: #43a047;
     }
 
     @media (prefers-color-scheme: dark) {
         :root {
             --background: #181a1b;
+            --container-bg: #23242a;
             --foreground: #f5f5f5;
+            --hint: #bdbdbd;
+            --box-bg: #23272a;
+            --box-border: #444;
+            --box-correct: #388e3c;
+            --box-correct-border: #4caf50;
+            --box-present: #bfae2c;
+            --box-present-border: #ffeb3b;
+            --box-absent: #333;
+            --box-absent-border: #666;
+            --input-bg: #23272a;
+            --input-border: #666;
+            --btn-bg: #1565c0;
+            --btn-bg-disabled: #37474f;
+            --btn-bg-restart: #388e3c;
         }
     }
 
@@ -99,10 +128,40 @@
         }
     }
 
+    .container {
+        width: 100%;
+        max-width: 420px;
+        margin: 2rem auto;
+        padding: 1rem;
+        background: var(--container-bg);
+        border-radius: 1rem;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        font-family: 'Assistant', Arial, sans-serif;
+        color: var(--foreground);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 1rem 0.75rem;
+            margin: 0;
+            box-sizing: border-box;
+        }
+    }
+
     .flex-center {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .flex-col {
+        flex-direction: column;
     }
 
     .btn,
@@ -143,14 +202,6 @@
         font-size: 2.2rem;
         color: var(--foreground);
         letter-spacing: 0.1em;
-    }
-
-    @media (max-width: 600px) {
-        .container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+        margin-block-end: 0;
     }
 </style>

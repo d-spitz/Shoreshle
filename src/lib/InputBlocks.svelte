@@ -14,42 +14,21 @@
 	} = $props();
 </script>
 
-<div class="input-blocks" dir="rtl">
-	{#each Array(rootLength) as _, i}
-		{#if statuses}
-			<span class="letter {statuses[i]}">
-				{guess[i] || ''}
-			</span>
-		{:else}
-			<span class="letter {disabled ? 'disabled-row' : ''} {filled && guess[i] ? 'filled' : ''}">
-				{guess[i] || ''}
-			</span>
-		{/if}
-	{/each}
-</div>
+{#each Array(rootLength) as _, i}
+	{#if statuses}
+		<span class="letter {statuses[i]}">
+			{guess[i] || ''}
+		</span>
+	{:else}
+		<span class="letter {disabled ? 'disabled-row' : ''} {filled && guess[i] ? 'filled' : ''}">
+			{guess[i] || ''}
+		</span>
+	{/if}
+{/each}
 
 <style>
-	:root {
-		--disabled-bg: #e9e9e9;
-		--disabled-color: #b0b0b0;
-		--disabled-border: #d0d0d0;
-	}
-	@media (prefers-color-scheme: dark) {
-		:root {
-			--disabled-bg: #23272a;
-			--disabled-color: #888;
-			--disabled-border: #444;
-		}
-	}
-	.input-blocks {
-		display: flex;
-		gap: 0.25rem;
-		justify-content: center;
-	}
 	.letter {
-		display: inline-block;
-		width: 4rem;
-		height: 4rem;
+		block-size: 4rem;
 		line-height: 4rem;
 		font-size: 2.6rem;
 		border-radius: 0.4rem;
