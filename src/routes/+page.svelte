@@ -205,7 +205,7 @@
 			month: '2-digit',
 			year: '2-digit'
 		});
-		return `שורשל\n${dateStr} | ${guesses.length}/${maxGuesses}\n${getEmojiGrid()}`;
+		return `שורשל\n${dateStr} | ${guesses.length}/${maxGuesses}\n${getEmojiGrid()}\n`;
 	}
 
 	async function handleShare() {
