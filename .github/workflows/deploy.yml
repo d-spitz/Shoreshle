@@ -28,6 +28,7 @@ jobs:
       - name: build
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
+          PUBLIC_ROOT_OVERRIDE: ''
         run: pnpm run build
 
       - name: Upload Artifacts
