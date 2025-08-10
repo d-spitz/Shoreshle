@@ -29,6 +29,7 @@
 <style>
 	.letter {
 		block-size: 4rem;
+		inline-size: 4rem;
 		line-height: 4rem;
 		font-size: 2.6rem;
 		border-radius: 0.4rem;

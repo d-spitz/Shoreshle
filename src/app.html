@@ -7,8 +7,7 @@
     <title>שורשל</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="The Shoreshle game (שורשל) which plays like Worldle except with Hebrew roots.">
-    <script data-goatcounter="https://d-spitz.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://d-spitz.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
     %sveltekit.head%
 </head>
 
@@ -118,26 +117,25 @@
     }
 
     html {
-        block-size: 100%;
+        min-block-size: 100dvh;
     }
 
     body {
-        background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 35%, #fbc2eb 70%, #f7faff 100%);
-        background-attachment: fixed;
+        background: radial-gradient(circle at 20% 30%, #a1c4fd 0%, #c2e9fb 35%, #fbc2eb 70%, #f7faff 100%);
+        background-size: cover;
         overflow-x: hidden;
-        block-size: 100%;
+        min-block-size: 100dvh;
         margin: 0;
         padding: 0 1rem;
         display: flex;
-        flex-direction: column;
         align-items: center;
         gap: 1rem;
     }
 
     @media (prefers-color-scheme: dark) {
         body {
-            background: radial-gradient(circle at 20% 30%, #232526 0%, #5b3262 35%, #232526 80%, #181a1b 100%);
-            background-attachment: fixed;
+            background: radial-gradient(circle at 20% 30%, #232526 0%, #593160 35%, #232526 60%, rgb(61, 79, 88) 100%);
+            background-size: cover;
         }
     }
 

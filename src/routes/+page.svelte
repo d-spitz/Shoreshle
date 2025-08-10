@@ -48,7 +48,7 @@
 		if (PUBLIC_ROOT_OVERRIDE) {
 			return {
 				root: PUBLIC_ROOT_OVERRIDE,
-				meaning: ''
+				meaning: 'sample meaning',
 			};
 		}
 		const today = new Date().toISOString().slice(0, 10);

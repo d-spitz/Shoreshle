@@ -1,7 +1,6 @@
 .guesses {
     display: grid;
     gap: 0.25rem;
-    inline-size: 64%;
 }
 .restart-btn {
     font-size: 1.1rem;
