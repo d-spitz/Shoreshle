@@ -117,12 +117,14 @@
     }
 
     html {
-        block-size: -webkit-fill-available;
+        block-size: 100%;
     }
 
     body {
         background: radial-gradient(circle at 20% 30%, #a1c4fd 0%, #c2e9fb 35%, #fbc2eb 70%, #f7faff 100%);
         background-size: cover;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
         overflow-x: hidden;
         min-block-size: 100dvh;
         min-block-size: -webkit-fill-available;
@@ -137,6 +139,8 @@
         body {
             background: radial-gradient(circle at 20% 30%, #232526 0%, #593160 35%, #232526 60%, rgb(61, 79, 88) 100%);
             background-size: cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
     }
 
