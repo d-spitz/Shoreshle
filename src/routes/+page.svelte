@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { roots } from '$lib/roots';
 	import type { Root } from '$lib/models/root';
+	import { PUBLIC_ROOT_OVERRIDE } from '$env/static/public';
 	import Keyboard from '$lib/Keyboard.svelte';
 	import InputBlocks from '$lib/InputBlocks.svelte';
 	import Alert from '$lib/Alert.svelte';
@@ -31,10 +32,25 @@
 	let showAlert = $state(false);
 	let alertType = $state<'success' | 'warning'>('warning');
 	let normalizedRoots = $derived(roots.map((r) => normalizeWord(r.root)));
-
+	let pealimRootLink = $derived(
+		`https://www.pealim.com/dict/?pos=verb&num-radicals=${rootLength}&${currentRoot.root
+			.split('')
+			.map((r, i) => {
+				const index = i + 1;
+				const indexLabel = index === rootLength ? 'f' : index;
+				return `r${indexLabel}=${normalizeLetter(r)}`;
+			})
+			.join('&')}`
+	);
 	let letterStatuses = $state<Record<string, 'correct' | 'present' | 'absent' | undefined>>({});
 
 	function getDailyRoot(): Root {
+		if (PUBLIC_ROOT_OVERRIDE) {
+			return {
+				root: PUBLIC_ROOT_OVERRIDE,
+				meaning: ''
+			};
+		}
 		const today = new Date().toISOString().slice(0, 10);
 		// FNV-1a hash
 		let hash = 2166136261;
@@ -302,7 +318,7 @@
 <div class="hint-details">
 	{currentRoot.meaning}
 </div>
-<div class="guesses" dir="rtl" style:grid-template-columns="{'1fr '.repeat(currentRoot.root.length)}">
+<div class="guesses" dir="rtl" style:grid-template-columns={'1fr '.repeat(currentRoot.root.length)}>
 	{#each Array(maxGuesses) as _, rowIdx}
 		{#if rowIdx < guesses.length}
 			<!-- Filled guess row -->
@@ -348,7 +364,10 @@
 			{#if gameState === 'won'}
 				ניחשת נכון!
 			{:else}
-				הפסדת! השורש היה: <strong>{currentRoot.root.split('').join('.')}</strong>
+				הפסדת! השורש היה:
+				<a href={pealimRootLink} target="_blank" rel="noopener">
+					<strong>{currentRoot.root.split('').join('.')}</strong>
+				</a>
 			{/if}
 		</div>
 		<div class="emoji-grid">
